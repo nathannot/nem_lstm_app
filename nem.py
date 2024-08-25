@@ -32,6 +32,7 @@ if data is not None:
     x.RRP = np.where(x.RRP < 0, x.RRP.median(), x.RRP)
 
     x.SETTLEMENTDATE = pd.to_datetime(x.SETTLEMENTDATE, format='mixed')
+    df = x.copy()
     x['day_of_week'] = x.SETTLEMENTDATE.dt.dayofweek
     day = 3600 * 24
     x['seconds'] = x.SETTLEMENTDATE.dt.hour * 3600 + x.SETTLEMENTDATE.dt.minute * 60
@@ -97,7 +98,10 @@ if data is not None:
 
     f6 = pd.DataFrame(fut6[0])
     f6.columns = ['6H Forecast']
-    start_date = "2024/08/19 00:05:00"
+    last_date = pd.to_datetime(df['SETTLEMENTDATE'].iloc[-1])
+
+    # Set the start date to the next period (5 minutes after the last date)
+    start_date = last_date + pd.Timedelta(minutes=5)
     date_range = pd.date_range(start=start_date, periods=144, freq='5T')
     f6['Date'] = date_range
     st.write(f6)
